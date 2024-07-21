@@ -1,0 +1,611 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["configs", "items", "locations", "public"]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model b1_grade_config {
+  b1_config_code String      @id @db.Char(5)
+  b1_content     String      @db.VarChar(255)
+  grade          Int         @db.SmallInt
+  region_code    String      @db.Char(5)
+  region         region      @relation(fields: [region_code], references: [region_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1gradeconfig_region")
+  b1_rasoat      b1_rasoat[]
+
+  @@schema("configs")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model b2_grade_config {
+  b2_config_code String      @id @db.Char(5)
+  b2_content     String      @db.VarChar(255)
+  grade          Int         @db.SmallInt
+  notes          String      @db.VarChar(255)
+  region_code    String      @db.Char(5)
+  region         region      @relation(fields: [region_code], references: [region_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1gradeconfig_region")
+  b2_rasoat      b2_rasoat[]
+
+  @@schema("configs")
+}
+
+model company_dept {
+  dept_code         String              @id @db.Char(5)
+  dept_name         String              @db.VarChar(35)
+  structure_company structure_company[]
+
+  @@schema("configs")
+}
+
+model company_organize {
+  position_code     String              @id @db.Char(5)
+  position_name     String              @db.VarChar(25)
+  structure_company structure_company[]
+
+  @@schema("configs")
+}
+
+model hocanngheo_grade_range {
+  grade_range_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contents       String @db.VarChar(255)
+  min_grade      Int    @db.SmallInt
+  max_grade      Int    @db.SmallInt
+
+  @@schema("configs")
+}
+
+model hongheo_grade_range {
+  grade_range_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contents       String @db.VarChar(255)
+  min_grade      Int    @db.SmallInt
+  max_grade      Int    @db.SmallInt
+
+  @@schema("configs")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model popularity_config {
+  popularity_config_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region                 String @db.VarChar(255)
+  num_of_family          Int?
+  num_of_resident        Int?
+  num_of_ethnic          Int?
+  num_of_ethnic_resident Int?
+
+  @@schema("configs")
+}
+
+model structure_company {
+  position_code    String           @db.Char(5)
+  dept_code        String           @db.Char(5)
+  company_dept     company_dept     @relation(fields: [dept_code], references: [dept_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_struccomp_deptcomp")
+  company_organize company_organize @relation(fields: [position_code], references: [position_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_struccomp_organcomp")
+
+  @@id([position_code, dept_code])
+  @@schema("configs")
+}
+
+model animal {
+  animal_code       String              @id @db.Char(5)
+  animal_name       String              @db.VarChar(255)
+  animal_possession animal_possession[]
+
+  @@schema("items")
+}
+
+model asset {
+  asset_code       String             @id @db.Char(5)
+  asset_name       String             @db.VarChar(255)
+  asset_possession asset_possession[]
+
+  @@schema("items")
+}
+
+model facilities {
+  facility_code String @id @db.Char(10)
+  facility_name String @db.VarChar(255)
+
+  @@schema("items")
+}
+
+model hard_reasons {
+  reason_code String @id @db.Char(10)
+  reason      String @db.VarChar(255)
+
+  @@schema("items")
+}
+
+model land {
+  land_code       String            @id @db.Char(5)
+  land_name       String            @db.VarChar(255)
+  land_possession land_possession[]
+
+  @@schema("items")
+}
+
+model other_options {
+  other_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  b1_id      String   @db.Uuid
+  other_code String?  @db.Char(10)
+  other_name String   @db.VarChar(35)
+  b1_paper   b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_otheroption_b1paper")
+
+  @@schema("items")
+}
+
+model support_policies {
+  policy_code String @id @db.Char(10)
+  policy_name String @db.VarChar(255)
+
+  @@schema("items")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model department {
+  department_code String   @id @db.Char(5)
+  department_name String   @db.VarChar(50)
+  province_code   String   @db.Char(5)
+  province        province @relation(fields: [province_code], references: [province_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_department_province")
+
+  @@index([department_code], map: "department_code_idx")
+  @@index([department_name], map: "department_name_idx")
+  @@schema("locations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model district {
+  district_code         String                  @id @db.Char(5)
+  district_name         String                  @db.VarChar(50)
+  province_code         String                  @db.Char(5)
+  province              province                @relation(fields: [province_code], references: [province_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_district_province")
+  ward                  ward[]
+  district_ward_account district_ward_account[]
+  family_info           family_info[]
+
+  @@index([district_code], map: "district_code_idx")
+  @@index([district_name], map: "district_name_idx")
+  @@schema("locations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model province {
+  province_code String        @id @db.Char(5)
+  province_name String        @db.VarChar(50)
+  region_code   String        @db.Char(5)
+  department    department[]
+  district      district[]
+  region        region        @relation(fields: [region_code], references: [region_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_province_region")
+  family_info   family_info[]
+
+  @@index([province_code], map: "province_code_idx")
+  @@index([province_name], map: "province_name_idx")
+  @@schema("locations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model region {
+  region_code     String            @id @db.Char(5)
+  region_name     String            @db.VarChar(50)
+  b1_grade_config b1_grade_config[]
+  b2_grade_config b2_grade_config[]
+  province        province[]
+
+  @@schema("locations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model town {
+  town_code   String        @id @db.Char(5)
+  town_name   String        @db.VarChar(50)
+  ward_code   String        @db.Char(5)
+  ward        ward          @relation(fields: [ward_code], references: [ward_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_town_ward")
+  family_info family_info[]
+
+  @@schema("locations")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ward {
+  ward_code             String                  @id @db.Char(5)
+  ward_name             String                  @db.VarChar(50)
+  district_code         String                  @db.Char(5)
+  town                  town[]
+  district              district                @relation(fields: [district_code], references: [district_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_ward_district")
+  district_ward_account district_ward_account[]
+  family_info           family_info[]
+
+  @@index([ward_code], map: "ward_code_idx")
+  @@index([ward_name], map: "ward_name_idx")
+  @@schema("locations")
+}
+
+model a_condition_info {
+  condition_code      String                @id @db.Char(5)
+  condition_content   String                @db.VarChar(255)
+  condition_of_family condition_of_family[]
+
+  @@schema("public")
+}
+
+model a_paper {
+  a_id                 String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id            String                @db.Uuid
+  fast_classify_person String?               @db.VarChar(35)
+  send_status          String?               @db.Char(5)
+  classify_date        DateTime?             @db.Date
+  hongheo              hongheo               @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_apaper_family")
+  condition_of_family  condition_of_family[]
+
+  @@schema("public")
+}
+
+model animal_possession {
+  animal_code String   @db.Char(5)
+  b1_id       String   @db.Uuid
+  quantity    Int?
+  animal      animal   @relation(fields: [animal_code], references: [animal_code], onDelete: Cascade, map: "fk_assetpossession_animal")
+  b1_paper    b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assetpossession_b1paper")
+
+  @@id([animal_code, b1_id])
+  @@schema("public")
+}
+
+model asset_possession {
+  asset_code String   @db.Char(5)
+  b1_id      String   @db.Uuid
+  quantity   Int?
+  asset      asset    @relation(fields: [asset_code], references: [asset_code], onDelete: Cascade, map: "fk_assetpossession_asset")
+  b1_paper   b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assetpossession_b1paper")
+
+  @@id([asset_code, b1_id])
+  @@schema("public")
+}
+
+model b1_paper {
+  b1_id                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id             String                 @db.Uuid
+  is_aquaculture        Boolean?
+  vlc_cotnha            String?                @db.Char(5)
+  vlc_mainha            String?                @db.Char(5)
+  vlc_tuongnha          String?                @db.Char(5)
+  area_house            Float?
+  toilet_in_use         String?                @db.Char(5)
+  electricity_source    String?                @db.Char(5)
+  monthly_electricity   Float?
+  water_source          String?                @db.Char(5)
+  other_options         other_options[]
+  animal_possession     animal_possession[]
+  asset_possession      asset_possession[]
+  hongheo               hongheo                @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1paper_family")
+  get_hard_reasons      get_hard_reasons?
+  get_support_policies  get_support_policies?
+  land_possession       land_possession[]
+  need_support_policies need_support_policies?
+
+  @@schema("public")
+}
+
+model b1_rasoat {
+  family_id       String          @db.Uuid
+  b1_config_code  String          @db.Char(5)
+  checked         Boolean
+  b1_grade_config b1_grade_config @relation(fields: [b1_config_code], references: [b1_config_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1rasoat_b1gradeconfig")
+  hongheo         hongheo         @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1rasoat_familyinfo")
+
+  @@id([family_id, b1_config_code])
+  @@schema("public")
+}
+
+model b2_rasoat {
+  family_id       String          @db.Uuid
+  b2_config_code  String          @db.Char(5)
+  checked         Boolean
+  b2_grade_config b2_grade_config @relation(fields: [b2_config_code], references: [b2_config_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1rasoat_b2gradeconfig")
+  hongheo         hongheo         @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1rasoat_familyinfo")
+
+  @@id([family_id, b2_config_code])
+  @@schema("public")
+}
+
+model condition_of_family {
+  condition_code   String           @db.Char(5)
+  a_id             String           @db.Uuid
+  a_condition_info a_condition_info @relation(fields: [condition_code], references: [condition_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_conditionfamily_acondition")
+  a_paper          a_paper          @relation(fields: [a_id], references: [a_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_conditionfamily_apaper")
+
+  @@id([a_id, condition_code])
+  @@schema("public")
+}
+
+model district_ward_account {
+  account_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username      String   @db.VarChar(35)
+  passwd        String   @db.VarChar(35)
+  district_code String   @db.Char(5)
+  ward_code     String?  @db.Char(5)
+  district      district @relation(fields: [district_code], references: [district_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_dwaccount_district")
+  ward          ward?    @relation(fields: [ward_code], references: [ward_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_dwaccount_ward")
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model family_info {
+  family_id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_code          String               @unique @db.VarChar(10)
+  years                Int                  @db.SmallInt
+  province_code        String               @db.Char(5)
+  district_code        String               @db.Char(5)
+  ward_code            String               @db.Char(5)
+  town_code            String?              @db.Char(5)
+  full_name            String               @db.VarChar(35)
+  sex                  Boolean?
+  family_number        String?              @db.VarChar(20)
+  nation               String?              @db.VarChar(15)
+  nation_in_place      Boolean?
+  year_of_birth        Int?                 @db.SmallInt
+  month_of_birth       Int?                 @db.SmallInt
+  day_of_birth         Int?                 @db.SmallInt
+  identity_card_number String?              @db.VarChar(12)
+  identity_card_date   DateTime?            @db.Date
+  temporay_place       String?              @db.VarChar(255)
+  district             district             @relation(fields: [district_code], references: [district_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_district")
+  periods              periods              @relation(fields: [years], references: [years], onDelete: Cascade, onUpdate: NoAction, map: "fk_familyinfo_periods")
+  province             province             @relation(fields: [province_code], references: [province_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_province")
+  town                 town?                @relation(fields: [town_code], references: [town_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_town")
+  ward                 ward                 @relation(fields: [ward_code], references: [ward_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_ward")
+  family_member_info   family_member_info[]
+  hongheo              hongheo?
+  honlndn              honlndn?
+
+  @@index([full_name], map: "owner_info_idx", type: SpGist)
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model family_member_info {
+  member_id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id             String         @db.Uuid
+  full_name             String         @db.VarChar(35)
+  owner_relationship    String?        @db.VarChar(15)
+  year_of_birth         Int?           @db.SmallInt
+  month_of_birth        Int?           @db.SmallInt
+  day_of_birth          Int?           @db.SmallInt
+  identity_card_number  String?        @db.VarChar(12)
+  nation                String?        @db.VarChar(15)
+  sex                   Boolean?
+  height                Int?
+  weight                Int?
+  education_status      Boolean?
+  education_level       edu_level?
+  culture_level         cul_level?
+  training_level        train_level?
+  has_medical_insurance Boolean?
+  has_internet          Boolean?
+  social_assistance     tcxh?
+  has_job               job_status?
+  job_type              job_cate?
+  has_contract          contract_type?
+  has_pension           pension_type?
+  hard_disease          Boolean?
+  family_info           family_info    @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_member_family")
+
+  @@index([full_name], map: "member_name_idx", type: SpGist)
+  @@schema("public")
+}
+
+model get_hard_reasons {
+  reason_codes String[] @db.Char(10)
+  b1_id        String   @id @db.Uuid
+  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_gethardreasons_b1paper")
+
+  @@schema("public")
+}
+
+model get_support_policies {
+  policy_codes String[] @db.Char(10)
+  b1_id        String   @id @db.Uuid
+  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_getsupportpolicies_b1paper")
+
+  @@schema("public")
+}
+
+model hongheo {
+  family_id               String                    @id @db.Uuid
+  last_year_classify      classification
+  classify_date           DateTime?                 @db.Date
+  classify_person         String?                   @db.VarChar
+  a_paper                 a_paper[]
+  b1_paper                b1_paper[]
+  b1_rasoat               b1_rasoat[]
+  b2_rasoat               b2_rasoat[]
+  family_info             family_info               @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hongheo_family")
+  hongheo_classify_result hongheo_classify_result[]
+
+  @@schema("public")
+}
+
+model hongheo_classify_result {
+  result_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id       String          @db.Uuid
+  family_owner    String          @db.VarChar(35)
+  a_grade         Boolean
+  b1_grade        Int             @db.SmallInt
+  b2_grade        Int             @db.SmallInt
+  final_result    classification?
+  classify_person String?         @db.VarChar(35)
+  status          String          @db.Char(10)
+  hongheo         hongheo         @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hongheoresult_familyinfo")
+
+  @@schema("public")
+}
+
+model honlndn {
+  family_id     String          @id @db.Uuid
+  job_title     nlnd
+  classify_date DateTime?       @db.Date
+  monthly_gdp   Float?
+  family_info   family_info     @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_honlndn_family")
+  income_family income_family[]
+
+  @@schema("public")
+}
+
+model income_family {
+  income_code    String  @db.Char(5)
+  family_id      String  @db.Uuid
+  income_content String? @db.VarChar(255)
+  total_income   Float?
+  total_enxpense Float?
+  honlndn        honlndn @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_familyincome_familyinfo")
+
+  @@id([income_code, family_id])
+  @@schema("public")
+}
+
+model land_possession {
+  land_code String   @db.Char(5)
+  b1_id     String   @db.Uuid
+  area      Float?
+  b1_paper  b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assetpossession_b1paper")
+  land      land     @relation(fields: [land_code], references: [land_code], onDelete: Cascade, map: "fk_assetpossession_land")
+
+  @@id([land_code, b1_id])
+  @@schema("public")
+}
+
+model need_support_policies {
+  policy_codes String[] @db.Char(10)
+  b1_id        String   @id @db.Uuid
+  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_needsupportpolicies_b1paper")
+
+  @@schema("public")
+}
+
+model periods {
+  years       Int           @id @db.SmallInt
+  start_date  DateTime      @db.Date
+  end_date    DateTime      @db.Date
+  family_info family_info[]
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model user_account {
+  account_id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username             String    @db.VarChar(35)
+  passwd               String    @db.VarChar(35)
+  full_name            String    @db.VarChar(35)
+  title                String    @db.VarChar(25)
+  sex                  String    @db.Char(7)
+  birth_date           DateTime? @db.Date
+  phone                String?   @db.Char(11)
+  email                String?   @db.VarChar(255)
+  address              String?   @db.VarChar(255)
+  province             String?   @db.VarChar(35)
+  district             String?   @db.VarChar(35)
+  ward                 String?   @db.VarChar(35)
+  is_department_leader Boolean?
+
+  @@schema("public")
+}
+
+enum classification {
+  h__ngh_o       @map("hộ nghèo")
+  h__c_n_ngh_o   @map("hộ cận nghèo")
+  h__kh_ng_ngh_o @map("hộ không nghèo")
+
+  @@schema("public")
+}
+
+enum contract_type {
+  c__h_p___ng_lao___ng       @map("có hợp đồng lao động")
+  kh_ng_c__h_p___ng_lao___ng @map("không có hợp đồng lao động")
+  kh_ng_l_m_c_ng__n_l__ng    @map("không làm công ăn lương")
+
+  @@schema("public")
+}
+
+enum cul_level {
+  ch_a_t_t_nghi_p_ti_u_h_c @map("chưa tốt nghiệp tiểu học")
+  ti_u_h_c                 @map("tiểu học")
+  trung_h_c_c__s_          @map("trung học cơ sở")
+  trung_h_c_ph__th_ng      @map("trung học phổ thông")
+
+  @@schema("public")
+}
+
+enum edu_level {
+  m_m_non__m_u_gi_o     @map("mầm non, mẫu giáo")
+  ti_u_h_c              @map("tiểu học")
+  trung_h_c_c__s_       @map("trung học cơ sở")
+  trung_h_c_ph__th_ng   @map("trung học phổ thông")
+  kh_a___o_t_o_ng_n_h_n @map("khóa đào tạo ngắn hạn")
+  trung_c_p             @map("trung cấp")
+  cao___ng              @map("cao đẳng")
+  i_h_c_tr__l_n         @map("đại học trở lên")
+
+  @@schema("public")
+}
+
+enum job_cate {
+  c_ng_ch_c_vi_n_ch_c      @map("công chức viên chức")
+  l_m_cho_doanh_nghi_p     @map("làm cho doanh nghiệp")
+  l_m_thu__cho_h__gia___nh @map("làm thuê cho hộ gia đình")
+  kh_c                     @map("khác")
+
+  @@schema("public")
+}
+
+enum job_status {
+  ang_l_m_vi_c               @map("đang làm việc")
+  kh_ng_c__vi_c_l_m          @map("không có việc làm")
+  kh_ng_c__kh__n_ng_lao___ng @map("không có khả năng lao động")
+  ang__i_h_c                 @map("đang đi học")
+  kh_ng_mu_n__i_l_m          @map("không muốn đi làm")
+  ngh__h_u_n_i_tr_           @map("nghỉ hưu/nội trợ")
+
+  @@schema("public")
+}
+
+enum nlnd {
+  n_ng_nghi_p @map("nông nghiệp")
+  l_m_nghi_p  @map("lâm nghiệp")
+  ng__nghi_p  @map("ngư nghiệp")
+  di_m_nghi_p @map("diêm nghiệp")
+
+  @@schema("public")
+}
+
+enum pension_type {
+  ang_h__ng_l__ng_h_u                          @map("đang hưởng lương hưu")
+  ang_h__ng_tr__c_p_b_o_hi_m_x__h_i_h_ng_th_ng @map("đang hưởng trợ cấp bảo hiểm xã hội hằng tháng")
+  ang_h__ng_tr__c_p_ng__i_c__c_ng_h_ng_th_ng   @map("đang hưởng trợ cấp người có công hằng tháng")
+
+  @@schema("public")
+}
+
+enum tcxh {
+  ng__i_cao_tu_i   @map("người cao tuổi")
+  ng__i_khuy_t_t_t @map("người khuyết tật")
+  tr__em_m__c_i    @map("trẻ em mồ côi")
+
+  @@schema("public")
+}
+
+enum train_level {
+  ch_a_qua___o_t_o_ngh_     @map("chưa qua đào tạo nghề")
+  s__c_p_ch_ng_ch__d_y_ngh_ @map("sơ cấp chứng chỉ dạy nghề")
+  trung_c_p                 @map("trung cấp")
+  cao___ng                  @map("cao đẳng")
+  i_h_c                     @map("đại học")
+  sau___i_h_c               @map("sau đại học")
+
+  @@schema("public")
+}

@@ -1,9 +1,10 @@
 import {
     Injectable,
     NotFoundException,
-    ForbiddenException
+    ForbiddenException,
+    UnauthorizedException
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { SignUpUADto, SignInUADto } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
@@ -36,20 +37,15 @@ export class AuthService {
     }
 
     async signInUserAccount(dto: SignInUADto) {
-        const user =
-            await this.prisma.user_account.findUnique({
-                where: {
-                    username: dto.username
-                }
-            });
-
-        if (!user) {
-            throw new NotFoundException('Not found any users');
-        }
+        const user = await this.prisma.user_account.findUnique({
+            where: {
+                username: dto.username
+            }
+        });
 
         const pwdMatch = await argon.verify(user.passwd, dto.passwd);
         if (!pwdMatch) {
-            throw new ForbiddenException('Credential incorrect');
+            throw new UnauthorizedException();
         }
 
         return this.signToken(user.account_id, user.username);

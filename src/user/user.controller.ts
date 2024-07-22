@@ -7,9 +7,9 @@ import {
     Patch,
     UseGuards
 } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guard';
+import { JwtGuard } from '../auth/guard';
 import { UserService } from './user.service';
-import { district_ward_account, user_account } from '@prisma/client';
+import { user_account } from '@prisma/client';
 import { GetUser } from './decorator';
 import { EditUserDto } from './dto';
 
@@ -19,14 +19,14 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @Get('me')
-    getMeUserAccount(@GetUser() dto: user_account) {
-        return { data: dto };
+    getMeUserAccount(@GetUser() info: { id; username }) {
+        return this.userService.getMe(info);
     }
 
-    // Get all users
-    /*
-        ...code her...
-    */
+    @Get('all')
+    getUsers() {
+        return this.userService.getUsers();
+    }
 
     @Patch('edit')
     editMe(

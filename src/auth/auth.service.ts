@@ -1,7 +1,5 @@
 import {
     Injectable,
-    NotFoundException,
-    ForbiddenException,
     UnauthorizedException
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -56,7 +54,7 @@ export class AuthService {
         username: string
     ): Promise<{ access_token }> {
         const payload = {
-            id: userId,
+            account_id: userId,
             username: username
         };
 

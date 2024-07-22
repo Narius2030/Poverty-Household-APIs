@@ -4,6 +4,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { SignInUADto, SignUpUADto } from 'src/auth/dto';
+import { EditUserDto } from 'src/user/dto';
 
 describe('App e2e', () => {
     let app: INestApplication;
@@ -34,15 +35,14 @@ describe('App e2e', () => {
                     username: 'tester03',
                     full_name: 'Valdimir Testova',
                     passwd: 'test123',
-                    title: 'Chánh Thanh tra TP HCM',
+                    title: 'Chánh Thanh tra',
                     sex: 'Female'
                 };
                 return pactum
                     .spec()
                     .post('/auth/signup')
                     .withBody(dto)
-                    .expectStatus(201)
-                    .inspect();
+                    .expectStatus(201);
             });
         });
 
@@ -57,7 +57,51 @@ describe('App e2e', () => {
                     .post('/auth/signin')
                     .withBody(dto)
                     .expectStatus(200)
-                    .inspect();
+                    .stores('userAt', 'access_token');
+            });
+        });
+    });
+
+    describe('User e2e', () => {
+        describe('Get me', () => {
+            it('Should get that owner information', () => {
+                return pactum
+                    .spec()
+                    .get('/user/me')
+                    .withHeaders({
+                        Authorization: 'Bearer $S{userAt}'
+                    })
+                    .expectStatus(200);
+            });
+        });
+
+        describe('Get all users', () => {
+            it('Should get all user information', () => {
+                return pactum
+                    .spec()
+                    .get('/user/all')
+                    .withHeaders({
+                        Authorization: 'Bearer $S{userAt}'
+                    })
+                    .expectStatus(200);
+            });
+        });
+
+        describe('Edit owner information', () => {
+            it('Should eidt information', () => {
+                const dto: EditUserDto = {
+                    passwd: '12345678',
+                    // username: 'tester',
+                    email: 'test@gmail.com'
+                }
+                return pactum
+                    .spec()
+                    .patch('/user/edit')
+                    .withHeaders({
+                        Authorization: 'Bearer $S{userAt}'
+                    })
+                    .withBody(dto)
+                    .expectStatus(200);
             });
         });
     });

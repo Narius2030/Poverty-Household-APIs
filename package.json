@@ -13,7 +13,7 @@
     "db:dev:applied": "npx prisma migrate resolve --applied 0_init",
     "db:dev:migrate": "npx prisma migrate dev",
     "db:dev:sync": "npm run db:dev:pull && npm run db:dev:script && sleep 1 && npm run db:dev:generate",
-    "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+    "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate dev",
     "db:test:rm": "docker compose rm test-db -s -f -v",
     "db:test:up": "docker compose up test-db -d",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 1 && npm run prisma:test:deploy",

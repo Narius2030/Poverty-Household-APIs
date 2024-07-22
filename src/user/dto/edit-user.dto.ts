@@ -1,55 +1,63 @@
-import { IsBoolean, IsDate, IsEmail, IsNumberString, IsOptional, IsPhoneNumber, IsString } from "class-validator"
+import {
+    IsBoolean,
+    IsDate,
+    IsEmail,
+    IsNumberString,
+    IsOptional,
+    IsPhoneNumber,
+    IsString
+} from 'class-validator';
 
 export class EditUserDto {
     @IsString()
     @IsOptional()
-    username?: string
+    username?: string;
 
     @IsString()
     @IsOptional()
-    passwd?: string
+    passwd?: string;
 
     @IsString()
     @IsOptional()
-    province_code?: string
+    province_code?: string;
 
     @IsNumberString()
     @IsOptional()
-    district_code?: string
+    district_code?: string;
 
     @IsNumberString()
     @IsOptional()
-    ward_code?: string
+    ward_code?: string;
 
     @IsString()
     @IsOptional()
-    full_name?: string
+    full_name?: string;
 
     @IsString()
     @IsOptional()
-    title?: string
+    title?: string;
 
     @IsString()
     @IsOptional()
-    sex?: string
-    
+    sex?: string;
+
     @IsDate()
     @IsOptional()
-    birth_date?: Date
+    birth_date?: Date;
 
     @IsPhoneNumber()
     @IsOptional()
-    phone?: string
+    phone?: string;
 
     @IsEmail()
     @IsOptional()
-    email?: string
+    email?: string;
 
     @IsString()
     @IsOptional()
-    address?: string
+    address?: string;
 
     @IsBoolean()
     @IsOptional()
-    is_department_leader?: boolean
+    is_department_leader?: boolean;
 }

@@ -324,7 +324,7 @@ model condition_of_family {
 
 model district_ward_account {
   account_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username      String   @db.VarChar(35)
+  username      String   @unique @db.VarChar(35)
   passwd        String   @db.VarChar(255)
   district_code String   @db.Char(5)
   ward_code     String?  @db.Char(5)
@@ -499,7 +499,7 @@ model periods {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model user_account {
   account_id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username             String    @db.VarChar(35)
+  username             String    @unique @db.VarChar(35)
   passwd               String    @db.VarChar(255)
   full_name            String    @db.VarChar(35)
   title                String    @db.VarChar(25)
@@ -508,9 +508,9 @@ model user_account {
   phone                String?   @db.Char(11)
   email                String?   @db.VarChar(255)
   address              String?   @db.VarChar(255)
-  province             String?   @db.VarChar(35)
-  district             String?   @db.VarChar(35)
-  ward                 String?   @db.VarChar(35)
+  province_code        String?   @db.Char(5)
+  district_code        String?   @db.Char(5)
+  ward_code            String?   @db.Char(5)
   is_department_leader Boolean?
 
   @@schema("public")

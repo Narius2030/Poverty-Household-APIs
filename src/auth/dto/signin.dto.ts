@@ -2,9 +2,13 @@ import { IsHash, IsString } from "class-validator"
 
 export class SignInDWADto {
     @IsString()
-    @IsHash('md5')
-    account_id: string
+    username: string
 
+    @IsString()
+    passwd: string
+}
+
+export class SignInUADto {
     @IsString()
     username: string
 

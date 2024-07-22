@@ -325,7 +325,7 @@ model condition_of_family {
 model district_ward_account {
   account_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username      String   @db.VarChar(35)
-  passwd        String   @db.VarChar(35)
+  passwd        String   @db.VarChar(255)
   district_code String   @db.Char(5)
   ward_code     String?  @db.Char(5)
   district      district @relation(fields: [district_code], references: [district_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_dwaccount_district")
@@ -500,7 +500,7 @@ model periods {
 model user_account {
   account_id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username             String    @db.VarChar(35)
-  passwd               String    @db.VarChar(35)
+  passwd               String    @db.VarChar(255)
   full_name            String    @db.VarChar(35)
   title                String    @db.VarChar(25)
   sex                  String    @db.Char(7)

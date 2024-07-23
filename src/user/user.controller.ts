@@ -20,6 +20,7 @@ export class UserController {
 
     @Get('me')
     getMeUserAccount(@GetUser() info: { id; username }) {
+        console.log(info);
         return this.userService.getMe(info);
     }
 

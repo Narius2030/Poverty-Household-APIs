@@ -91,7 +91,7 @@ describe('App e2e', () => {
             it('Should eidt information', () => {
                 const dto: EditUserDto = {
                     passwd: '12345678',
-                    // username: 'tester',
+                    username: 'tester',
                     email: 'test@gmail.com'
                 }
                 return pactum

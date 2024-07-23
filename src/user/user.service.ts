@@ -15,7 +15,8 @@ export class UserService {
     async getMe(info: {id, username}) {
         const user = await this.prisma.user_account.findUnique({
             where: {
-                account_id: info.id
+                account_id: info.id,
+                username: info.username
             }
         });
 

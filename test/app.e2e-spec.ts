@@ -91,7 +91,6 @@ describe('App e2e', () => {
             it('Should eidt information', () => {
                 const dto: EditUserDto = {
                     passwd: '12345678',
-                    username: 'tester',
                     email: 'test@gmail.com'
                 }
                 return pactum
@@ -101,7 +100,9 @@ describe('App e2e', () => {
                         Authorization: 'Bearer $S{userAt}'
                     })
                     .withBody(dto)
-                    .expectStatus(200);
+                    .expectStatus(200)
+                    .expectBodyContains(dto.passwd)
+                    .expectBodyContains(dto.email);
             });
         });
     });

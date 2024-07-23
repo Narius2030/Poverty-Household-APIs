@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { PeriodModule } from './period/period.module';
+import { FamilyModule } from './family/family.module';
 
 @Module({
     imports: [
@@ -11,7 +12,8 @@ import { PeriodModule } from './period/period.module';
         PrismaModule,
         ConfigModule.forRoot({ isGlobal: true }),
         UserModule,
-        PeriodModule
+        PeriodModule,
+        FamilyModule
     ]
 })
 export class AppModule {}

@@ -12,7 +12,7 @@ import { user_account } from '@prisma/client';
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    async getMe(info: {id, username}) {
+    async getMe(info: { id; username }) {
         const user = await this.prisma.user_account.findUnique({
             where: {
                 account_id: info.id,
@@ -20,7 +20,7 @@ export class UserService {
             }
         });
 
-        return user;
+        return { data: user };
     }
 
     async getUsers() {
@@ -41,7 +41,7 @@ export class UserService {
                 is_department_leader: true
             }
         });
-        return {data: users};
+        return { data: users };
     }
 
     async editMe(userId: string, dto: EditUserDto) {
@@ -55,8 +55,7 @@ export class UserService {
             }
         });
 
-        delete user.passwd;
-        return user;
+        return { data: user };
     }
 
     async editUser(userName: string, dto: EditUserDto) {
@@ -72,7 +71,10 @@ export class UserService {
             );
         }
 
-        dto.passwd = await argon.hash(dto.passwd);
+        if (dto.passwd) {
+            dto.passwd = await argon.hash(dto.passwd);
+        }
+        
         const user = await this.prisma.user_account.update({
             where: {
                 account_id: isUser.account_id
@@ -83,7 +85,7 @@ export class UserService {
         });
 
         delete user.passwd;
-        return user;
+        return { data: user };
     }
 
     async deleteUser(userName: string) {
@@ -101,6 +103,6 @@ export class UserService {
         }
 
         delete user.passwd;
-        return user;
+        return { data: user };
     }
 }

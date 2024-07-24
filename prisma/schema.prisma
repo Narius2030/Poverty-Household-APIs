@@ -505,7 +505,7 @@ model user_account {
   title                String    @db.VarChar(25)
   sex                  String    @db.Char(7)
   birth_date           DateTime? @db.Date
-  phone                String?   @db.Char(11)
+  phone                String?   @db.Char(15)
   email                String?   @db.VarChar(255)
   address              String?   @db.VarChar(255)
   province_code        String?   @db.Char(5)

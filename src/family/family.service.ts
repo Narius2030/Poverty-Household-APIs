@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FamilyInfo } from './dto/new-family.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class FamilyService {
@@ -24,28 +25,52 @@ export class FamilyService {
             );
         }
 
-        const family = await this.prisma.family_info.create({
-            data: {
-                family_code: dto.family_code,
-                years: dto.years,
-                province_code: dto.province_code,
-                district_code: dto.district_code,
-                ward_code: dto.ward_code,
-                full_name: dto.full_name,
-                town_code: dto.town_code || null,
-                family_number: dto.family_number || null,
-                nation_in_place: !!dto.nation_in_place || null,
-                identity_card_date: dto.identity_card_date || null,
-                temporay_place: dto.temporay_place || null,
-                sex: !!dto.sex || null,
-                nation: dto.nation || null,
-                year_of_birth: dto.year_of_birth || null,
-                month_of_birth: dto.month_of_birth || null,
-                day_of_birth: dto.day_of_birth || null,
-                identity_card_number: dto.identity_card_number || null
-            }
-        });
+        let family: FamilyInfo;
+        try {
+            family = await this.prisma.family_info.create({
+                data: {
+                    family_code: dto.family_code,
+                    years: dto.years,
+                    province_code: dto.province_code,
+                    district_code: dto.district_code,
+                    ward_code: dto.ward_code,
+                    full_name: dto.full_name,
+                    town_code: dto.town_code || null,
+                    family_number: dto.family_number || null,
+                    nation_in_place: !!dto.nation_in_place || null,
+                    identity_card_date:
+                        dto.identity_card_date || null,
+                    temporay_place: dto.temporay_place || null,
+                    sex: !!dto.sex || null,
+                    nation: dto.nation || null,
+                    year_of_birth: dto.year_of_birth || null,
+                    month_of_birth: dto.month_of_birth || null,
+                    day_of_birth: dto.day_of_birth || null,
+                    identity_card_number:
+                        dto.identity_card_number || null
+                }
+            });
+        } catch (ex) {
+            throw new Error(ex);
+        }
 
         return family;
+    }
+
+    async deleteFamilyInfo(familyCode: string) {
+        let family: FamilyInfo;
+        try {
+            family = await this.prisma.family_info.delete({
+                where: {
+                    family_code: familyCode
+                }
+            });
+        } catch (ex) {
+            throw new ForbiddenException(
+                'Your family information to delete not found'
+            );
+        }
+
+        return { data: family };
     }
 }

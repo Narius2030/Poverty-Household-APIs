@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PeriodDto } from './dto/create-period.dto';
 import { EditPeriod } from './dto/edit-period.dto';
@@ -24,9 +28,11 @@ export class PeriodService {
                 years: dto.years
             }
         });
-        
+
         if (hasPeriod) {
-            throw new ForbiddenException("The period is existing. Can't create more");
+            throw new ForbiddenException(
+                "The period is existing. Can't create more"
+            );
         }
 
         const period = await this.prisma.periods.create({
@@ -37,7 +43,7 @@ export class PeriodService {
             }
         });
 
-        return period;
+        return { data: period };
     }
 
     async editPeriod(dto: EditPeriod, year: number) {
@@ -51,12 +57,11 @@ export class PeriodService {
                     ...dto
                 }
             });
-    
-        } catch(ex) {
-            throw new NotFoundException("Year to update not found");
+        } catch (ex) {
+            throw new NotFoundException('Year to update not found');
         }
 
-        return period;
+        return { data: period };
     }
 
     async deletePeriod(year: number) {
@@ -67,11 +72,10 @@ export class PeriodService {
                     years: year
                 }
             });
-    
-        } catch(ex) {
-            throw new NotFoundException("Year to delete not found");
+        } catch (ex) {
+            throw new NotFoundException('Year to delete not found');
         }
 
-        return period;
+        return { data: period };
     }
 }

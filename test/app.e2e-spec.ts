@@ -5,7 +5,6 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { SignInUADto, SignUpUADto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
-import * as argon from 'argon2';
 import { PeriodDto } from 'src/period/dto';
 import { FamilyInfo } from 'src/family/dto';
 

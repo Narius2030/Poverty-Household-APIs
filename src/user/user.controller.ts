@@ -16,7 +16,8 @@ import {
     ApiBody,
     ApiOperation,
     ApiParam,
-    ApiTags
+    ApiTags,
+    ApiExcludeEndpoint
 } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
@@ -74,36 +75,37 @@ export class UserController {
         return this.userService.editMe(userId, dto);
     }
 
-    @ApiOperation({
-        summary: 'Admin can edit another user accounts',
-        description:
-            '**Object of use:** \n\n* Admin can use this API \n\n* User must supply `ACCESS_TOKEN:` to edit information \n\n**Access token**: User can use `signin API` to get it'
-    })
-    @ApiBearerAuth()
-    @ApiBody({
-        type: EditUserDto,
-        examples: {
-            user_1: {
-                value: {
-                    passwd: '87654321',
-                    email: 'testerxautrai@gmail.com',
-                    district_code: '661'
-                }
-            }
-        }
-    })
+    @ApiExcludeEndpoint()
+    // @ApiOperation({
+    //     summary: 'Admin can edit another user accounts',
+    //     description:
+    //         '**Object of use:** \n\n* Admin can use this API \n\n* User must supply `ACCESS_TOKEN:` to edit information \n\n**Access token**: User can use `signin API` to get it'
+    // })
+    // @ApiBearerAuth()
+    // @ApiBody({
+    //     type: EditUserDto,
+    //     examples: {
+    //         user_1: {
+    //             value: {
+    //                 passwd: '87654321',
+    //                 email: 'testerxautrai@gmail.com',
+    //                 district_code: '661'
+    //             }
+    //         }
+    //     }
+    // })
     @Patch('edit/:username')
-    @ApiParam({
-        name: 'username',
-        type: 'string',
-        examples: {
-            user_1: {
-                value: 'tester03',
-                description:
-                    'User Martin Tony Stark Tran, he is Thu ky UBND TPHCM'
-            }
-        }
-    })
+    // @ApiParam({
+    //     name: 'username',
+    //     type: 'string',
+    //     examples: {
+    //         user_1: {
+    //             value: 'tester03',
+    //             description:
+    //                 'User Martin Tony Stark Tran, he is Thu ky UBND TPHCM'
+    //         }
+    //     }
+    // })
     editUser(
         @Param('username') userName: string,
         @Body() dto: EditUserDto
@@ -111,23 +113,24 @@ export class UserController {
         return this.userService.editUser(userName, dto);
     }
 
-    @ApiOperation({
-        summary: 'Admin can delete another user accounts',
-        description:
-            '**Object of use:** \n\n* Admin can use this API \n\n* User must supply `ACCESS_TOKEN:` to delete an user account \n\n**Access token**: User can use `signin API` to get it'
-    })
-    @ApiBearerAuth()
+    @ApiExcludeEndpoint()
+    // @ApiOperation({
+    //     summary: 'Admin can delete another user accounts',
+    //     description:
+    //         '**Object of use:** \n\n* Admin can use this API \n\n* User must supply `ACCESS_TOKEN:` to delete an user account \n\n**Access token**: User can use `signin API` to get it'
+    // })
+    // @ApiBearerAuth()
     @Delete('delete/:username')
-    @ApiParam({
-        name: 'username',
-        type: 'string',
-        examples: {
-            user_1: {
-                value: 'tester04',
-                description: 'User Tony Ngong, he is Pho chu tich'
-            }
-        }
-    })
+    // @ApiParam({
+    //     name: 'username',
+    //     type: 'string',
+    //     examples: {
+    //         user_1: {
+    //             value: 'tester04',
+    //             description: 'User Tony Ngong, he is Pho chu tich'
+    //         }
+    //     }
+    // })
     deleteUser(@Param('username') userName: string) {
         return this.userService.deleteUser(userName);
     }

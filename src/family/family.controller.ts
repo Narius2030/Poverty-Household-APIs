@@ -13,7 +13,8 @@ import {
     ApiBody,
     ApiOperation,
     ApiParam,
-    ApiTags
+    ApiTags,
+    ApiExcludeEndpoint
 } from '@nestjs/swagger';
 
 
@@ -62,24 +63,25 @@ export class FamilyController {
         return this.familyService.createFamilyInfo(dto);
     }
 
-    @ApiOperation({
-        summary: 'Admin can delete a existing period of survey',
-        description:
-            '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
-    })
-    @ApiBearerAuth()
+    @ApiExcludeEndpoint()
+    // @ApiOperation({
+    //     summary: 'Admin can delete a existing period of survey',
+    //     description:
+    //         '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
+    // })
+    // @ApiBearerAuth()
     @Delete('delete/:family_code')
-    @ApiParam({
-        name: 'family_code',
-        type: 'string',
-        examples: {
-            family_1: {
-                value: "70-09-662",
-                description:
-                    'This period come from 2020/01/01 to 2021/01/01'
-            }
-        }
-    })
+    // @ApiParam({
+    //     name: 'family_code',
+    //     type: 'string',
+    //     examples: {
+    //         family_1: {
+    //             value: "70-09-662",
+    //             description:
+    //                 'This period come from 2020/01/01 to 2021/01/01'
+    //         }
+    //     }
+    // })
     deleteFamilyInfo(@Param('family_code') familyCode: string) {
         return this.familyService.deleteFamilyInfo(familyCode);
     }

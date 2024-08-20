@@ -65,36 +65,36 @@ export class PeriodController {
         return this.periodService.createPeriod(dto);
     }
 
-    @ApiExcludeEndpoint()
-    // @ApiOperation({
-    //     summary: 'Admin can edit a existing period of survey',
-    //     description:
-    //         '**Object of use:** \n\n* Admin can edit this API \n\n* User must supply `ACCESS_TOKEN:` to edit a existing period information \n\n**Access token**: User can use `signin API` to get it'
-    // })
-    // @ApiBearerAuth()
-    // @ApiBody({
-    //     type: PeriodDto,
-    //     examples: {
-    //         year_1: {
-    //             value: {
-    //                 start_date: '2020-01-01',
-    //                 end_date: '2021-01-01'
-    //             }
-    //         }
-    //     }
-    // })
+    // @ApiExcludeEndpoint()
+    @ApiOperation({
+        summary: 'Admin can edit a existing period of survey',
+        description:
+            '**Object of use:** \n\n* Admin can edit this API \n\n* User must supply `ACCESS_TOKEN:` to edit a existing period information \n\n**Access token**: User can use `signin API` to get it'
+    })
+    @ApiBearerAuth()
+    @ApiBody({
+        type: PeriodDto,
+        examples: {
+            year_1: {
+                value: {
+                    start_date: '2020-01-01',
+                    end_date: '2021-01-01'
+                }
+            }
+        }
+    })
     @Patch('edit/:year')
-    // @ApiParam({
-    //     name: 'year',
-    //     type: 'string',
-    //     examples: {
-    //         year_1: {
-    //             value: 2020,
-    //             description:
-    //                 'This period come from 2020/01/01 to 2021/01/01'
-    //         }
-    //     }
-    // })
+    @ApiParam({
+        name: 'year',
+        type: 'string',
+        examples: {
+            year_1: {
+                value: 2020,
+                description:
+                    'This period come from 2020/01/01 to 2021/01/01'
+            }
+        }
+    })
     editPeriod(
         @Body() dto: EditPeriod,
         @Param('year', ParseIntPipe) year: number
@@ -103,25 +103,25 @@ export class PeriodController {
         return this.periodService.editPeriod(dto, year);
     }
 
-    @ApiExcludeEndpoint()
-    // @ApiOperation({
-    //     summary: 'Admin can delete a existing period of survey',
-    //     description:
-    //         '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
-    // })
-    // @ApiBearerAuth()
+    // @ApiExcludeEndpoint()
+    @ApiOperation({
+        summary: 'Admin can delete a existing period of survey',
+        description:
+            '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
+    })
+    @ApiBearerAuth()
     @Delete('delete/:year')
-    // @ApiParam({
-    //     name: 'year',
-    //     type: 'string',
-    //     examples: {
-    //         year_1: {
-    //             value: 2020,
-    //             description:
-    //                 'This period come from 2020/01/01 to 2021/01/01'
-    //         }
-    //     }
-    // })
+    @ApiParam({
+        name: 'year',
+        type: 'string',
+        examples: {
+            year_1: {
+                value: 2020,
+                description:
+                    'This period come from 2020/01/01 to 2021/01/01'
+            }
+        }
+    })
     deletePeriod(@Param('year', ParseIntPipe) year: number) {
         return this.periodService.deletePeriod(year);
     }

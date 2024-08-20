@@ -56,7 +56,11 @@ export class PersonInfo {
     identity_card_number?: string;
 }
 
-export class FamilyInfo extends PersonInfo {
+export class FamilyInfo {
+    @IsString()
+    @IsOptional()
+    family_id: string
+
     @IsString()
     family_code: string;
 
@@ -89,9 +93,8 @@ export class FamilyInfo extends PersonInfo {
     @IsDate()
     @IsOptional()
     @Transform(({ value }) => toDate(value))
-    identity_card_date?: Date;
+    created_date: Date;
 
     @IsString()
-    @IsOptional()
-    temporay_place?: string;
+    family_type: string;
 }

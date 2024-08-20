@@ -120,7 +120,7 @@ export class UserController {
     //         '**Object of use:** \n\n* Admin can use this API \n\n* User must supply `ACCESS_TOKEN:` to delete an user account \n\n**Access token**: User can use `signin API` to get it'
     // })
     // @ApiBearerAuth()
-    @Delete('delete/:username')
+    @Delete('delete/:accountId')
     // @ApiParam({
     //     name: 'username',
     //     type: 'string',
@@ -131,7 +131,7 @@ export class UserController {
     //         }
     //     }
     // })
-    deleteUser(@Param('username') userName: string) {
-        return this.userService.deleteUser(userName);
+    deleteUser(@Param('accountId') accountId: string) {
+        return this.userService.deleteUser(accountId);
     }
 }

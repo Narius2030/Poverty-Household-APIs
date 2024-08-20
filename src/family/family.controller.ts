@@ -48,12 +48,12 @@ export class FamilyController {
             family_1: {
                 value: {
                     family_code: '68-09-662',
-                    years: 2021,
+                    years: 2022,
                     province_code: '67',
                     district_code: '662',
                     ward_code: '24643',
-                    full_name: 'Hung A Ti',
-                    year_of_birth: 1990
+                    nation_in_place: true,
+                    family_type: "mới chuyển tới"
                 }
             }
         }
@@ -63,26 +63,53 @@ export class FamilyController {
         return this.familyService.createFamilyInfo(dto);
     }
 
-    @ApiExcludeEndpoint()
-    // @ApiOperation({
-    //     summary: 'Admin can delete a existing period of survey',
-    //     description:
-    //         '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
-    // })
-    // @ApiBearerAuth()
-    @Delete('delete/:family_code')
-    // @ApiParam({
-    //     name: 'family_code',
-    //     type: 'string',
-    //     examples: {
-    //         family_1: {
-    //             value: "70-09-662",
-    //             description:
-    //                 'This period come from 2020/01/01 to 2021/01/01'
-    //         }
-    //     }
-    // })
-    deleteFamilyInfo(@Param('family_code') familyCode: string) {
+    // @ApiExcludeEndpoint()
+    @ApiOperation({
+        summary: 'Admin can delete a existing period of survey',
+        description:
+            '**Object of use:** \n\n* Admin can delete this API \n\n* User must supply `ACCESS_TOKEN:` to delete a existing period information \n\n**Access token**: User can use `signin API` to get it'
+    })
+    @ApiBearerAuth()
+    @Delete('delete/:family_id')
+    @ApiParam({
+        name: 'family_code',
+        type: 'string',
+        examples: {
+            family_1: {
+                value: "70-09-662",
+                description:
+                    'This period come from 2020/01/01 to 2021/01/01'
+            }
+        }
+    })
+    deleteFamilyInfo(@Param('family_id') familyCode: string) {
         return this.familyService.deleteFamilyInfo(familyCode);
+    }
+
+    /* Controller for Data warehouse */
+
+    @Get('stage/dim_family')
+    getStgDimFamlily() {
+        return this.familyService.getStageDimFamily();
+    }
+
+    @Get('stage/dim_familymember')
+    getStgDimFamilyMember() {
+        return this.familyService.getStageDimFamilyMember();
+    }
+
+    @Get('stage/dim_survey')
+    getStgDimSurvey() {
+        return this.familyService.getStageDimSurvey();
+    }
+
+    @Get('stage/poverty_fact')
+    getStgPovertyFact() {
+        return this.familyService.getStagePovertyFact();
+    }
+
+    @Get('stage/member_survey_fact')
+    getStgMemberSurveyFact() {
+        return this.familyService.getStageMemberSurveyFact();
     }
 }

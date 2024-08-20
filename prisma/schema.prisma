@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
+  previewFeatures = ["multiSchema", "views"]
 }
 
 datasource db {
@@ -225,21 +225,22 @@ model ward {
 }
 
 model a_condition_info {
-  condition_code      String                @id @db.Char(5)
-  condition_content   String                @db.VarChar(255)
-  condition_of_family condition_of_family[]
+  condition_code    String @id @db.Char(5)
+  condition_content String @db.VarChar(255)
 
   @@schema("public")
 }
 
 model a_paper {
-  a_id                 String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  family_id            String                @db.Uuid
-  fast_classify_person String?               @db.VarChar(35)
-  send_status          String?               @db.Char(5)
-  classify_date        DateTime?             @db.Date
-  hongheo              hongheo               @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_apaper_family")
-  condition_of_family  condition_of_family[]
+  a_id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id            String    @db.Uuid
+  fast_classify_person String?   @db.VarChar(35)
+  send_status          String?   @db.Char(5)
+  classify_date        DateTime? @db.Date
+  condition_codes      String[]  @db.Char(5)
+  condition_names      String[]  @db.VarChar(255)
+  created_date         DateTime  @default(now()) @db.Timestamp(6)
+  hongheo              hongheo   @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_apaper_family")
 
   @@schema("public")
 }
@@ -267,25 +268,29 @@ model asset_possession {
 }
 
 model b1_paper {
-  b1_id                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  family_id             String                 @db.Uuid
-  is_aquaculture        Boolean?
-  vlc_cotnha            String?                @db.Char(5)
-  vlc_mainha            String?                @db.Char(5)
-  vlc_tuongnha          String?                @db.Char(5)
-  area_house            Float?
-  toilet_in_use         String?                @db.Char(5)
-  electricity_source    String?                @db.Char(5)
-  monthly_electricity   Float?
-  water_source          String?                @db.Char(5)
-  other_options         other_options[]
-  animal_possession     animal_possession[]
-  asset_possession      asset_possession[]
-  hongheo               hongheo                @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1paper_family")
-  get_hard_reasons      get_hard_reasons?
-  get_support_policies  get_support_policies?
-  land_possession       land_possession[]
-  need_support_policies need_support_policies?
+  b1_id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id           String              @db.Uuid
+  is_aquaculture      Boolean?
+  vlc_cotnha          String?             @db.Char(5)
+  vlc_mainha          String?             @db.Char(5)
+  vlc_tuongnha        String?             @db.Char(5)
+  area_house          Float?
+  toilet_in_use       String?             @db.Char(5)
+  electricity_source  String?             @db.Char(5)
+  monthly_electricity Float?
+  water_source        String?             @db.Char(5)
+  reason_codes        String[]            @db.Char(10)
+  reason_names        String[]            @db.VarChar(255)
+  get_policy_codes    String[]            @db.Char(10)
+  get_policy_names    String[]            @db.VarChar(255)
+  need_policy_codes   String[]            @db.Char(10)
+  need_policy_names   String[]            @db.VarChar(255)
+  created_date        DateTime            @default(now()) @db.Timestamp(6)
+  other_options       other_options[]
+  animal_possession   animal_possession[]
+  asset_possession    asset_possession[]
+  hongheo             hongheo             @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_b1paper_family")
+  land_possession     land_possession[]
 
   @@schema("public")
 }
@@ -312,20 +317,10 @@ model b2_rasoat {
   @@schema("public")
 }
 
-model condition_of_family {
-  condition_code   String           @db.Char(5)
-  a_id             String           @db.Uuid
-  a_condition_info a_condition_info @relation(fields: [condition_code], references: [condition_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_conditionfamily_acondition")
-  a_paper          a_paper          @relation(fields: [a_id], references: [a_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_conditionfamily_apaper")
-
-  @@id([a_id, condition_code])
-  @@schema("public")
-}
-
 model district_ward_account {
   account_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username      String   @unique @db.VarChar(35)
-  passwd        String   @db.VarChar(255)
+  username      String   @db.VarChar(35)
+  passwd        String   @db.VarChar(35)
   district_code String   @db.Char(5)
   ward_code     String?  @db.Char(5)
   district      district @relation(fields: [district_code], references: [district_code], onDelete: Cascade, onUpdate: NoAction, map: "fk_dwaccount_district")
@@ -334,36 +329,27 @@ model district_ward_account {
   @@schema("public")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model family_info {
-  family_id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  family_code          String               @unique @db.VarChar(10)
-  years                Int                  @db.SmallInt
-  province_code        String               @db.Char(5)
-  district_code        String               @db.Char(5)
-  ward_code            String               @db.Char(5)
-  town_code            String?              @db.Char(5)
-  full_name            String               @db.VarChar(35)
-  sex                  Boolean?
-  family_number        String?              @db.VarChar(20)
-  nation               String?              @db.VarChar(15)
-  nation_in_place      Boolean?
-  year_of_birth        Int?                 @db.SmallInt
-  month_of_birth       Int?                 @db.SmallInt
-  day_of_birth         Int?                 @db.SmallInt
-  identity_card_number String?              @db.VarChar(12)
-  identity_card_date   DateTime?            @db.Date
-  temporay_place       String?              @db.VarChar(255)
-  district             district             @relation(fields: [district_code], references: [district_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_district")
-  periods              periods              @relation(fields: [years], references: [years], onDelete: Cascade, onUpdate: NoAction, map: "fk_familyinfo_periods")
-  province             province             @relation(fields: [province_code], references: [province_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_province")
-  town                 town?                @relation(fields: [town_code], references: [town_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_town")
-  ward                 ward                 @relation(fields: [ward_code], references: [ward_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_ward")
-  family_member_info   family_member_info[]
-  hongheo              hongheo?
-  honlndn              honlndn?
+  family_id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_code        String               @db.VarChar(10)
+  years              Int                  @db.SmallInt
+  province_code      String               @db.Char(5)
+  district_code      String               @db.Char(5)
+  ward_code          String               @db.Char(5)
+  town_code          String?              @db.Char(5)
+  family_number      String?              @db.VarChar(20)
+  nation_in_place    Boolean?
+  created_date       DateTime             @db.Timestamp(6)
+  family_type        String               @db.VarChar(25)
+  district           district             @relation(fields: [district_code], references: [district_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_district")
+  periods            periods              @relation(fields: [years], references: [years], onDelete: Cascade, onUpdate: NoAction, map: "fk_familyinfo_periods")
+  province           province             @relation(fields: [province_code], references: [province_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_province")
+  town               town?                @relation(fields: [town_code], references: [town_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_town")
+  ward               ward                 @relation(fields: [ward_code], references: [ward_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_ward")
+  family_member_info family_member_info[]
+  hongheo            hongheo?
+  honlndn            honlndn?
 
-  @@index([full_name], map: "owner_info_idx", type: SpGist)
   @@schema("public")
 }
 
@@ -393,25 +379,11 @@ model family_member_info {
   has_contract          contract_type?
   has_pension           pension_type?
   hard_disease          Boolean?
+  temporay_place        String?        @db.VarChar(255)
+  created_date          DateTime       @db.Timestamp(6)
   family_info           family_info    @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_member_family")
 
   @@index([full_name], map: "member_name_idx", type: SpGist)
-  @@schema("public")
-}
-
-model get_hard_reasons {
-  reason_codes String[] @db.Char(10)
-  b1_id        String   @id @db.Uuid
-  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_gethardreasons_b1paper")
-
-  @@schema("public")
-}
-
-model get_support_policies {
-  policy_codes String[] @db.Char(10)
-  b1_id        String   @id @db.Uuid
-  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_getsupportpolicies_b1paper")
-
   @@schema("public")
 }
 
@@ -420,6 +392,7 @@ model hongheo {
   last_year_classify      classification
   classify_date           DateTime?                 @db.Date
   classify_person         String?                   @db.VarChar
+  created_date            DateTime                  @db.Timestamp(6)
   a_paper                 a_paper[]
   b1_paper                b1_paper[]
   b1_rasoat               b1_rasoat[]
@@ -440,6 +413,7 @@ model hongheo_classify_result {
   final_result    classification?
   classify_person String?         @db.VarChar(35)
   status          String          @db.Char(10)
+  created_date    DateTime        @default(now()) @db.Timestamp(6)
   hongheo         hongheo         @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hongheoresult_familyinfo")
 
   @@schema("public")
@@ -450,6 +424,7 @@ model honlndn {
   job_title     nlnd
   classify_date DateTime?       @db.Date
   monthly_gdp   Float?
+  created_date  DateTime        @db.Timestamp(6)
   family_info   family_info     @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_honlndn_family")
   income_family income_family[]
 
@@ -479,14 +454,6 @@ model land_possession {
   @@schema("public")
 }
 
-model need_support_policies {
-  policy_codes String[] @db.Char(10)
-  b1_id        String   @id @db.Uuid
-  b1_paper     b1_paper @relation(fields: [b1_id], references: [b1_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_needsupportpolicies_b1paper")
-
-  @@schema("public")
-}
-
 model periods {
   years       Int           @id @db.SmallInt
   start_date  DateTime      @db.Date
@@ -499,19 +466,219 @@ model periods {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model user_account {
   account_id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username             String    @unique @db.VarChar(35)
+  username             String    @db.VarChar(35)
   passwd               String    @db.VarChar(255)
   full_name            String    @db.VarChar(35)
   title                String    @db.VarChar(25)
   sex                  String    @db.Char(7)
   birth_date           DateTime? @db.Date
-  phone                String?   @db.Char(15)
+  phone                String?   @db.Char(11)
   email                String?   @db.VarChar(255)
   address              String?   @db.VarChar(255)
-  province_code        String?   @db.Char(5)
-  district_code        String?   @db.Char(5)
-  ward_code            String?   @db.Char(5)
+  province             String?   @db.VarChar(35)
+  district             String?   @db.VarChar(35)
+  ward                 String?   @db.VarChar(35)
   is_department_leader Boolean?
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_so_nhan_khau {
+  fami_id      String? @db.Uuid
+  so_nhan_khau BigInt?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_classified_list {
+  thoi_gian_ra_soat DateTime?       @db.Date
+  chu_ho            String?         @db.VarChar(35)
+  gioi_tinh         Boolean?
+  phieu_a           Boolean?
+  phieu_b           Int?            @db.SmallInt
+  phieu_b2          Int?            @db.SmallInt
+  ket_qua_ra_soat   classification?
+  nguoi_ra_soat     String?         @db.VarChar(35)
+  so_nhan_khau      BigInt?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_thanh_vien_ho {
+  ho_va_ten      String?  @db.VarChar(35)
+  quan_he_chu_ho String?  @db.VarChar(15)
+  day_of_birth   Int?     @db.SmallInt
+  month_of_birth Int?     @db.SmallInt
+  year_of_birth  Int?     @db.SmallInt
+  cccd           String?  @db.VarChar(12)
+  dan_toc        String?  @db.VarChar(15)
+  gioi_tinh      Boolean?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_classify_info_list {
+  chu_ho          String?         @db.VarChar(35)
+  trang_thai      String?         @db.Char(10)
+  phieu_a         Boolean?
+  phieu_b         Int?            @db.SmallInt
+  phieu_b2        Int?            @db.SmallInt
+  ket_qua_ra_soat classification?
+  nguoi_ra_soat   String?         @db.VarChar(35)
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_ethnic_status {
+  id_ho        String? @db.Uuid
+  ten_chu_ho   String? @db.VarChar(35)
+  loai_dan_toc String?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgdimlocation {
+  column_       BigInt? @map("?column?")
+  region_code   String? @db.Char(5)
+  region_name   String? @db.VarChar(50)
+  province_code String? @db.Char(5)
+  province_name String? @db.VarChar(50)
+  district_code String? @db.Char(5)
+  district_name String? @db.VarChar(50)
+  ward_code     String? @db.Char(5)
+  ward_name     String? @db.VarChar(50)
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgmembersurveyfact {
+  member_id            String          @unique @db.Uuid
+  family_id            String?         @db.Uuid
+  year                 Decimal?        @db.Decimal
+  month                Decimal?        @db.Decimal
+  province_name        String?         @db.VarChar(50)
+  district_name        String?         @db.VarChar(50)
+  full_name            String?         @db.VarChar(35)
+  owner_relationship   String?         @db.VarChar(15)
+  year_of_birth        Int?            @db.SmallInt
+  month_of_birth       Int?            @db.SmallInt
+  day_of_birth         Int?            @db.SmallInt
+  identity_card_number String?         @db.VarChar(12)
+  nation               String?         @db.VarChar(15)
+  final_result         classification?
+  member_created_date  DateTime?       @db.Timestamp(6)
+  rs_created_date      DateTime?       @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgdimfamily {
+  family_id       String    @unique @db.Uuid
+  family_code     String?   @db.VarChar(10)
+  family_type     String?   @db.VarChar(25)
+  years           Int?      @db.SmallInt
+  province_code   String?   @db.Char(5)
+  province_name   String?   @db.VarChar(50)
+  district_code   String?   @db.Char(5)
+  district_name   String?   @db.VarChar(50)
+  ward_code       String?   @db.Char(5)
+  ward_name       String?   @db.VarChar(50)
+  family_number   String?   @db.VarChar(20)
+  nation_in_place Boolean?
+  created_date    DateTime? @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgdimfamilymember {
+  member_id             String         @unique @db.Uuid
+  family_id             String?        @db.Uuid
+  full_name             String?        @db.VarChar(35)
+  owner_relationship    String?        @db.VarChar(15)
+  year_of_birth         Int?           @db.SmallInt
+  month_of_birth        Int?           @db.SmallInt
+  day_of_birth          Int?           @db.SmallInt
+  identity_card_number  String?        @db.VarChar(12)
+  nation                String?        @db.VarChar(15)
+  sex                   Boolean?
+  height                Int?
+  weight                Int?
+  education_status      Boolean?
+  education_level       edu_level?
+  culture_level         cul_level?
+  training_level        train_level?
+  has_medical_insurance Boolean?
+  social_assistance     tcxh?
+  has_job               job_status?
+  job_type              job_cate?
+  has_contract          contract_type?
+  has_pension           pension_type?
+  created_date          DateTime?      @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgdimsurvey {
+  family_id            String          @unique @db.Uuid
+  a_id                 String?         @db.Uuid
+  fast_classify_person String?         @db.VarChar(35)
+  year                 Decimal?        @db.Decimal
+  month                Decimal?        @db.Decimal
+  condition_codes      String[]        @db.Char(5)
+  condition_names      String[]        @db.VarChar(255)
+  b1_id                String?         @db.Uuid
+  is_aquaculture       Boolean?
+  electricity_source   String?         @db.Char(5)
+  water_source         String?         @db.Char(5)
+  reason_names         String[]        @db.VarChar(255)
+  get_policy_names     String[]        @db.VarChar(255)
+  need_policy_names    String[]        @db.VarChar(255)
+  a_grade              Boolean?
+  b1_grade             Int?            @db.SmallInt
+  b2_grade             Int?            @db.SmallInt
+  final_result         classification?
+  classify_person      String?         @db.VarChar(35)
+  a_created_date       DateTime?       @db.Timestamp(6)
+  b1_created_date      DateTime?       @db.Timestamp(6)
+  rs_created_date      DateTime?       @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgpovertystatusfact {
+  family_id         String          @unique @db.Uuid
+  years             Int?            @db.SmallInt
+  province_name     String?         @db.VarChar(50)
+  district_name     String?         @db.VarChar(50)
+  family_code       String?         @db.VarChar(10)
+  owner_name        String?         @db.VarChar(35)
+  reason_names      String[]        @db.VarChar(255)
+  get_policy_names  String[]        @db.VarChar(255)
+  need_policy_names String[]        @db.VarChar(255)
+  a_grade           Boolean?
+  b1_grade          Int?            @db.SmallInt
+  b2_grade          Int?            @db.SmallInt
+  final_result      classification?
+  a_created_date    DateTime?       @db.Timestamp(6)
+  b1_created_date   DateTime?       @db.Timestamp(6)
+  rs_created_date   DateTime?       @db.Timestamp(6)
 
   @@schema("public")
 }

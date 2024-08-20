@@ -35,15 +35,19 @@ export class AuthService {
     }
 
     async signInUserAccount(dto: SignInUADto) {
-        const user = await this.prisma.user_account.findUnique({
+        const user = await this.prisma.user_account.findFirst({
             where: {
                 username: dto.username
             }
         });
 
+        if (!user) {
+            throw new UnauthorizedException("User account can't be found");
+        }
+
         const pwdMatch = await argon.verify(user.passwd, dto.passwd);
         if (!pwdMatch) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("User account can't be found");
         }
 
         return this.signToken(user.account_id, user.username);

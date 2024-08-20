@@ -12,11 +12,10 @@ import { user_account } from '@prisma/client';
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    async getMe(info: { id; username }) {
+    async getMe(info: any) {
         const user = await this.prisma.user_account.findUnique({
             where: {
-                account_id: info.id,
-                username: info.username
+                account_id: info.account_id
             }
         });
 
@@ -35,9 +34,9 @@ export class UserService {
                 phone: true,
                 email: true,
                 address: true,
-                province_code: true,
-                district_code: true,
-                ward_code: true,
+                province: true,
+                district: true,
+                ward: true,
                 is_department_leader: true
             }
         });
@@ -88,12 +87,12 @@ export class UserService {
         return { data: user };
     }
 
-    async deleteUser(userName: string) {
+    async deleteUser(accountId: string) {
         let user: user_account;
         try {
             user = await this.prisma.user_account.delete({
                 where: {
-                    username: userName
+                    account_id: accountId
                 }
             });
         } catch (exc) {

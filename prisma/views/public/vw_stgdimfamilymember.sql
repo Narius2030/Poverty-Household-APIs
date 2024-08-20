@@ -1,0 +1,26 @@
+SELECT
+  member_id,
+  family_id,
+  full_name,
+  owner_relationship,
+  year_of_birth,
+  month_of_birth,
+  day_of_birth,
+  identity_card_number,
+  nation,
+  sex,
+  height,
+  weight,
+  education_status,
+  education_level,
+  culture_level,
+  training_level,
+  has_medical_insurance,
+  social_assistance,
+  has_job,
+  job_type,
+  has_contract,
+  has_pension,
+  created_date
+FROM
+  family_member_info;

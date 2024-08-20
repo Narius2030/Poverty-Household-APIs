@@ -13,7 +13,7 @@ export class FamilyService {
     }
 
     async createFamilyInfo(dto: FamilyInfo) {
-        const hasFamily = await this.prisma.family_info.findUnique({
+        const hasFamily = await this.prisma.family_info.findFirst({
             where: {
                 family_code: dto.family_code
             }
@@ -34,20 +34,11 @@ export class FamilyService {
                     province_code: dto.province_code,
                     district_code: dto.district_code,
                     ward_code: dto.ward_code,
-                    full_name: dto.full_name,
                     town_code: dto.town_code || null,
                     family_number: dto.family_number || null,
                     nation_in_place: !!dto.nation_in_place || null,
-                    identity_card_date:
-                        dto.identity_card_date || null,
-                    temporay_place: dto.temporay_place || null,
-                    sex: !!dto.sex || null,
-                    nation: dto.nation || null,
-                    year_of_birth: dto.year_of_birth || null,
-                    month_of_birth: dto.month_of_birth || null,
-                    day_of_birth: dto.day_of_birth || null,
-                    identity_card_number:
-                        dto.identity_card_number || null
+                    created_date: new Date(),
+                    family_type: dto.family_type
                 }
             });
         } catch (ex) {
@@ -57,12 +48,12 @@ export class FamilyService {
         return family;
     }
 
-    async deleteFamilyInfo(familyCode: string) {
+    async deleteFamilyInfo(familyId: string) {
         let family: FamilyInfo;
         try {
             family = await this.prisma.family_info.delete({
                 where: {
-                    family_code: familyCode
+                    family_id: familyId
                 }
             });
         } catch (ex) {
@@ -72,5 +63,37 @@ export class FamilyService {
         }
 
         return { data: family };
+    }
+
+    /* Service for Data warehouse */
+
+    async getStageDimFamily() {
+        const stgDimFamily =
+            await this.prisma.vw_stgdimfamily.findMany({});
+        return stgDimFamily;
+    }
+
+    async getStageDimFamilyMember() {
+        const stgDimFamilyMem =
+            this.prisma.vw_stgdimfamilymember.findMany({});
+        return stgDimFamilyMem;
+    }
+
+    async getStageDimSurvey() {
+        const stgDimSurvey =
+            await this.prisma.vw_stgmembersurveyfact.findMany({});
+        return stgDimSurvey;
+    }
+
+    async getStagePovertyFact() {
+        const stgPovertyFact =
+            await this.prisma.vw_stgpovertystatusfact.findMany({});
+        return stgPovertyFact;
+    }
+
+    async getStageMemberSurveyFact() {
+        const stgMemberSurveyFact =
+            await this.prisma.vw_stgmembersurveyfact.findMany({});
+        return stgMemberSurveyFact
     }
 }

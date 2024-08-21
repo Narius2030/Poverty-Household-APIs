@@ -70,30 +70,30 @@ export class FamilyService {
     async getStageDimFamily() {
         const stgDimFamily =
             await this.prisma.vw_stgdimfamily.findMany({});
-        return stgDimFamily;
+        return { data: stgDimFamily };
     }
 
     async getStageDimFamilyMember() {
         const stgDimFamilyMem =
-            this.prisma.vw_stgdimfamilymember.findMany({});
-        return stgDimFamilyMem;
+            await this.prisma.vw_stgdimfamilymember.findMany({});
+        return { data: stgDimFamilyMem };
     }
 
     async getStageDimSurvey() {
         const stgDimSurvey =
-            await this.prisma.vw_stgmembersurveyfact.findMany({});
-        return stgDimSurvey;
+            await this.prisma.vw_stgdimsurvey.findMany({});
+        return { data: stgDimSurvey };
     }
 
     async getStagePovertyFact() {
         const stgPovertyFact =
             await this.prisma.vw_stgpovertystatusfact.findMany({});
-        return stgPovertyFact;
+        return { data: stgPovertyFact };
     }
 
     async getStageMemberSurveyFact() {
         const stgMemberSurveyFact =
             await this.prisma.vw_stgmembersurveyfact.findMany({});
-        return stgMemberSurveyFact
+        return { data: stgMemberSurveyFact };
     }
 }

@@ -403,18 +403,19 @@ model hongheo {
   @@schema("public")
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model hongheo_classify_result {
-  result_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  family_id       String          @db.Uuid
-  family_owner    String          @db.VarChar(35)
+  result_id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  family_id       String   @db.Uuid
+  family_owner    String   @db.VarChar(35)
   a_grade         Boolean
-  b1_grade        Int             @db.SmallInt
-  b2_grade        Int             @db.SmallInt
-  final_result    classification?
-  classify_person String?         @db.VarChar(35)
-  status          String          @db.Char(10)
-  created_date    DateTime        @default(now()) @db.Timestamp(6)
-  hongheo         hongheo         @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hongheoresult_familyinfo")
+  b1_grade        Int      @db.SmallInt
+  b2_grade        Int      @db.SmallInt
+  final_result    String?  @db.VarChar(25)
+  classify_person String?  @db.VarChar(35)
+  status          String   @db.Char(10)
+  created_date    DateTime @db.Timestamp(6)
+  hongheo         hongheo  @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_hongheoresult_familyinfo")
 
   @@schema("public")
 }
@@ -493,22 +494,6 @@ view vw_so_nhan_khau {
 }
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-view vw_classified_list {
-  thoi_gian_ra_soat DateTime?       @db.Date
-  chu_ho            String?         @db.VarChar(35)
-  gioi_tinh         Boolean?
-  phieu_a           Boolean?
-  phieu_b           Int?            @db.SmallInt
-  phieu_b2          Int?            @db.SmallInt
-  ket_qua_ra_soat   classification?
-  nguoi_ra_soat     String?         @db.VarChar(35)
-  so_nhan_khau      BigInt?
-
-  @@ignore
-  @@schema("public")
-}
-
-/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 view vw_thanh_vien_ho {
   ho_va_ten      String?  @db.VarChar(35)
   quan_he_chu_ho String?  @db.VarChar(15)
@@ -518,20 +503,6 @@ view vw_thanh_vien_ho {
   cccd           String?  @db.VarChar(12)
   dan_toc        String?  @db.VarChar(15)
   gioi_tinh      Boolean?
-
-  @@ignore
-  @@schema("public")
-}
-
-/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-view vw_classify_info_list {
-  chu_ho          String?         @db.VarChar(35)
-  trang_thai      String?         @db.Char(10)
-  phieu_a         Boolean?
-  phieu_b         Int?            @db.SmallInt
-  phieu_b2        Int?            @db.SmallInt
-  ket_qua_ra_soat classification?
-  nguoi_ra_soat   String?         @db.VarChar(35)
 
   @@ignore
   @@schema("public")
@@ -560,28 +531,6 @@ view vw_stgdimlocation {
   ward_name     String? @db.VarChar(50)
 
   @@ignore
-  @@schema("public")
-}
-
-/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-view vw_stgmembersurveyfact {
-  member_id            String          @unique @db.Uuid
-  family_id            String?         @db.Uuid
-  year                 Decimal?        @db.Decimal
-  month                Decimal?        @db.Decimal
-  province_name        String?         @db.VarChar(50)
-  district_name        String?         @db.VarChar(50)
-  full_name            String?         @db.VarChar(35)
-  owner_relationship   String?         @db.VarChar(15)
-  year_of_birth        Int?            @db.SmallInt
-  month_of_birth       Int?            @db.SmallInt
-  day_of_birth         Int?            @db.SmallInt
-  identity_card_number String?         @db.VarChar(12)
-  nation               String?         @db.VarChar(15)
-  final_result         classification?
-  member_created_date  DateTime?       @db.Timestamp(6)
-  rs_created_date      DateTime?       @db.Timestamp(6)
-
   @@schema("public")
 }
 
@@ -635,50 +584,72 @@ view vw_stgdimfamilymember {
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 view vw_stgdimsurvey {
-  family_id            String          @unique @db.Uuid
-  a_id                 String?         @db.Uuid
-  fast_classify_person String?         @db.VarChar(35)
-  year                 Decimal?        @db.Decimal
-  month                Decimal?        @db.Decimal
-  condition_codes      String[]        @db.Char(5)
-  condition_names      String[]        @db.VarChar(255)
-  b1_id                String?         @db.Uuid
+  family_id            String    @unique @db.Uuid
+  a_id                 String?   @db.Uuid
+  fast_classify_person String?   @db.VarChar(35)
+  year                 Decimal?  @db.Decimal
+  month                Decimal?  @db.Decimal
+  condition_codes      String[]  @db.Char(5)
+  condition_names      String[]  @db.VarChar(255)
+  b1_id                String?   @db.Uuid
   is_aquaculture       Boolean?
-  electricity_source   String?         @db.Char(5)
-  water_source         String?         @db.Char(5)
-  reason_names         String[]        @db.VarChar(255)
-  get_policy_names     String[]        @db.VarChar(255)
-  need_policy_names    String[]        @db.VarChar(255)
+  electricity_source   String?   @db.Char(5)
+  water_source         String?   @db.Char(5)
+  reason_names         String[]  @db.VarChar(255)
+  get_policy_names     String[]  @db.VarChar(255)
+  need_policy_names    String[]  @db.VarChar(255)
   a_grade              Boolean?
-  b1_grade             Int?            @db.SmallInt
-  b2_grade             Int?            @db.SmallInt
-  final_result         classification?
-  classify_person      String?         @db.VarChar(35)
-  a_created_date       DateTime?       @db.Timestamp(6)
-  b1_created_date      DateTime?       @db.Timestamp(6)
-  rs_created_date      DateTime?       @db.Timestamp(6)
+  b1_grade             Int?      @db.SmallInt
+  b2_grade             Int?      @db.SmallInt
+  final_result         String?   @db.VarChar(25)
+  classify_person      String?   @db.VarChar(35)
+  a_created_date       DateTime? @db.Timestamp(6)
+  b1_created_date      DateTime? @db.Timestamp(6)
+  rs_created_date      DateTime? @db.Timestamp(6)
 
   @@schema("public")
 }
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 view vw_stgpovertystatusfact {
-  family_id         String          @unique @db.Uuid
-  years             Int?            @db.SmallInt
-  province_name     String?         @db.VarChar(50)
-  district_name     String?         @db.VarChar(50)
-  family_code       String?         @db.VarChar(10)
-  owner_name        String?         @db.VarChar(35)
-  reason_names      String[]        @db.VarChar(255)
-  get_policy_names  String[]        @db.VarChar(255)
-  need_policy_names String[]        @db.VarChar(255)
+  family_id         String    @unique @db.Uuid
+  years             Int?      @db.SmallInt
+  province_name     String?   @db.VarChar(50)
+  district_name     String?   @db.VarChar(50)
+  family_code       String?   @db.VarChar(10)
+  owner_name        String?   @db.VarChar(35)
+  reason_names      String[]  @db.VarChar(255)
+  get_policy_names  String[]  @db.VarChar(255)
+  need_policy_names String[]  @db.VarChar(255)
   a_grade           Boolean?
-  b1_grade          Int?            @db.SmallInt
-  b2_grade          Int?            @db.SmallInt
-  final_result      classification?
-  a_created_date    DateTime?       @db.Timestamp(6)
-  b1_created_date   DateTime?       @db.Timestamp(6)
-  rs_created_date   DateTime?       @db.Timestamp(6)
+  b1_grade          Int?      @db.SmallInt
+  b2_grade          Int?      @db.SmallInt
+  final_result      String?   @db.VarChar(25)
+  a_created_date    DateTime? @db.Timestamp(6)
+  b1_created_date   DateTime? @db.Timestamp(6)
+  rs_created_date   DateTime? @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgmembersurveyfact {
+  member_id            String    @unique @db.Uuid
+  family_id            String?   @db.Uuid
+  year                 Decimal?  @db.Decimal
+  month                Decimal?  @db.Decimal
+  province_name        String?   @db.VarChar(50)
+  district_name        String?   @db.VarChar(50)
+  full_name            String?   @db.VarChar(35)
+  owner_relationship   String?   @db.VarChar(15)
+  year_of_birth        Int?      @db.SmallInt
+  month_of_birth       Int?      @db.SmallInt
+  day_of_birth         Int?      @db.SmallInt
+  identity_card_number String?   @db.VarChar(12)
+  nation               String?   @db.VarChar(15)
+  final_result         String?   @db.VarChar(25)
+  member_created_date  DateTime? @db.Timestamp(6)
+  rs_created_date      DateTime? @db.Timestamp(6)
 
   @@schema("public")
 }

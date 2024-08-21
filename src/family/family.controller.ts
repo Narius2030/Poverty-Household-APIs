@@ -4,7 +4,8 @@ import {
     Post,
     Get,
     Delete,
-    Param
+    Param,
+    UseGuards
 } from '@nestjs/common';
 import { FamilyInfo } from './dto/new-family.dto';
 import { FamilyService } from './family.service';
@@ -16,9 +17,10 @@ import {
     ApiTags,
     ApiExcludeEndpoint
 } from '@nestjs/swagger';
+import { JwtGuard } from '../auth/guard';
 
 
-
+@UseGuards(JwtGuard)
 @Controller('family')
 @ApiTags('Families')
 export class FamilyController {
@@ -87,27 +89,31 @@ export class FamilyController {
     }
 
     /* Controller for Data warehouse */
-
+    @ApiBearerAuth()
     @Get('stage/dim_family')
     getStgDimFamlily() {
         return this.familyService.getStageDimFamily();
     }
 
+    @ApiBearerAuth()
     @Get('stage/dim_familymember')
     getStgDimFamilyMember() {
         return this.familyService.getStageDimFamilyMember();
     }
 
+    @ApiBearerAuth()
     @Get('stage/dim_survey')
     getStgDimSurvey() {
         return this.familyService.getStageDimSurvey();
     }
 
+    @ApiBearerAuth()
     @Get('stage/poverty_fact')
     getStgPovertyFact() {
         return this.familyService.getStagePovertyFact();
     }
 
+    @ApiBearerAuth()
     @Get('stage/member_survey_fact')
     getStgMemberSurveyFact() {
         return this.familyService.getStageMemberSurveyFact();

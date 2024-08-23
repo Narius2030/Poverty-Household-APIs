@@ -239,7 +239,7 @@ model a_paper {
   classify_date        DateTime? @db.Date
   condition_codes      String[]  @db.Char(5)
   condition_names      String[]  @db.VarChar(255)
-  created_date         DateTime  @default(now()) @db.Timestamp(6)
+  created_date         DateTime  @db.Timestamp(6)
   hongheo              hongheo   @relation(fields: [family_id], references: [family_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_apaper_family")
 
   @@schema("public")
@@ -285,7 +285,7 @@ model b1_paper {
   get_policy_names    String[]            @db.VarChar(255)
   need_policy_codes   String[]            @db.Char(10)
   need_policy_names   String[]            @db.VarChar(255)
-  created_date        DateTime            @default(now()) @db.Timestamp(6)
+  created_date        DateTime            @db.Timestamp(6)
   other_options       other_options[]
   animal_possession   animal_possession[]
   asset_possession    asset_possession[]
@@ -332,6 +332,7 @@ model district_ward_account {
 model family_info {
   family_id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   family_code        String               @db.VarChar(10)
+  family_type        String               @db.VarChar(25)
   years              Int                  @db.SmallInt
   province_code      String               @db.Char(5)
   district_code      String               @db.Char(5)
@@ -340,7 +341,6 @@ model family_info {
   family_number      String?              @db.VarChar(20)
   nation_in_place    Boolean?
   created_date       DateTime             @db.Timestamp(6)
-  family_type        String               @db.VarChar(25)
   district           district             @relation(fields: [district_code], references: [district_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_district")
   periods            periods              @relation(fields: [years], references: [years], onDelete: Cascade, onUpdate: NoAction, map: "fk_familyinfo_periods")
   province           province             @relation(fields: [province_code], references: [province_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_familyinfo_province")
@@ -494,6 +494,22 @@ view vw_so_nhan_khau {
 }
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_classified_list {
+  thoi_gian_ra_soat DateTime? @db.Date
+  chu_ho            String?   @db.VarChar(35)
+  gioi_tinh         Boolean?
+  phieu_a           Boolean?
+  phieu_b           Int?      @db.SmallInt
+  phieu_b2          Int?      @db.SmallInt
+  ket_qua_ra_soat   String?   @db.VarChar(25)
+  nguoi_ra_soat     String?   @db.VarChar(35)
+  so_nhan_khau      BigInt?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 view vw_thanh_vien_ho {
   ho_va_ten      String?  @db.VarChar(35)
   quan_he_chu_ho String?  @db.VarChar(15)
@@ -509,26 +525,14 @@ view vw_thanh_vien_ho {
 }
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-view vw_ethnic_status {
-  id_ho        String? @db.Uuid
-  ten_chu_ho   String? @db.VarChar(35)
-  loai_dan_toc String?
-
-  @@ignore
-  @@schema("public")
-}
-
-/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-view vw_stgdimlocation {
-  column_       BigInt? @map("?column?")
-  region_code   String? @db.Char(5)
-  region_name   String? @db.VarChar(50)
-  province_code String? @db.Char(5)
-  province_name String? @db.VarChar(50)
-  district_code String? @db.Char(5)
-  district_name String? @db.VarChar(50)
-  ward_code     String? @db.Char(5)
-  ward_name     String? @db.VarChar(50)
+view vw_classify_info_list {
+  chu_ho          String?  @db.VarChar(35)
+  trang_thai      String?  @db.Char(10)
+  phieu_a         Boolean?
+  phieu_b         Int?     @db.SmallInt
+  phieu_b2        Int?     @db.SmallInt
+  ket_qua_ra_soat String?  @db.VarChar(25)
+  nguoi_ra_soat   String?  @db.VarChar(35)
 
   @@ignore
   @@schema("public")
@@ -651,6 +655,32 @@ view vw_stgmembersurveyfact {
   member_created_date  DateTime? @db.Timestamp(6)
   rs_created_date      DateTime? @db.Timestamp(6)
 
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_ethnic_status {
+  id_ho        String? @db.Uuid
+  ten_chu_ho   String? @db.VarChar(35)
+  loai_dan_toc String?
+
+  @@ignore
+  @@schema("public")
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view vw_stgdimlocation {
+  column_       BigInt? @map("?column?")
+  region_code   String? @db.Char(5)
+  region_name   String? @db.VarChar(50)
+  province_code String? @db.Char(5)
+  province_name String? @db.VarChar(50)
+  district_code String? @db.Char(5)
+  district_name String? @db.VarChar(50)
+  ward_code     String? @db.Char(5)
+  ward_name     String? @db.VarChar(50)
+
+  @@ignore
   @@schema("public")
 }
 
